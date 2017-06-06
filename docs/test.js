@@ -84,7 +84,7 @@ function addStream() {
       deviceId: devices[deviceIdx].deviceId
     }
   }).then(stream => {
-    selfView.srcObject = stream;
+    createVideoElm(selfStreamContainer, stream);
     msPC.addStream(stream);
   }).catch(e => console.log(`${e.name}: ${e.message}`));
   msPC.onaddstream = evt => remoteView.srcObject = evt.stream;
