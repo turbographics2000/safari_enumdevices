@@ -27,21 +27,21 @@ function multiStreamPCSetup(socket) {
   msPC = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.skyway.io:3478' }] });
   msPC.onicecandidate = evt => {
     console.log('msPC onicecandidate', evt.candidate);
-    socket.send(JSON.stringify({
+    socket.send({
       type: 'CANDIDATE',
       cnd: evt.candidate,
       dst: callTo.value
-    }));
+    });
   };
   msPC.onnegotiationneeded = evt => {
     console.log('msPC onnegotiationneeded');
     msPC.createOffer()
       .then(offer => pc.setLocalDescription(offer))
-      .then(_ => socket.send(JSON.stringify({
+      .then(_ => socket.send({
         type: 'OFFER',
         ofr: pc.localDescription,
         dst: callTo.value
-      })))
+      }))
       .catch(e => console.log('create offer error', e));
   }
   msPC.onaddstream = evt => {
@@ -63,11 +63,11 @@ function multiStreamPCSetup(socket) {
           return pc.setLocalDescription(answer);
         })
         .then(_ => {
-          return socket.send(JSON.stringify({
+          return socket.send({
             type: 'ANSWER',
             ans: pc.localDescription,
             dst: msg.src
-          }))
+          })
         })
         .catch(e => console.log('set remote offer error', e));
     }
