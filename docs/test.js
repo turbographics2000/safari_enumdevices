@@ -5,6 +5,7 @@ var deviceIdx = 0;
 var socket = null;
 
 peer.on('open', id => {
+  socketSetup();
   socket = peer.socket;
   console.log('peer on "open"');
   myIdDisp.textContent = id;
@@ -24,31 +25,7 @@ peer.on('open', id => {
   });
 });
 
-function multiStreamPCSetup(socket) {
-  msPC = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.skyway.io:3478' }] });
-  msPC.onicecandidate = evt => {
-    console.log('msPC onicecandidate', evt.candidate);
-    socket.send({
-      type: 'CANDIDATE',
-      cnd: evt.candidate,
-      dst: callTo.value
-    });
-  };
-  msPC.onnegotiationneeded = evt => {
-    console.log('msPC onnegotiationneeded');
-    msPC.createOffer()
-      .then(offer => msPC.setLocalDescription(offer))
-      .then(_ => socket.send({
-        type: 'OFFER',
-        ofr: msPC.localDescription,
-        dst: callTo.value
-      }))
-      .catch(e => console.log('create offer error', e));
-  }
-  msPC.onaddstream = evt => {
-    console.log('msPC onaddstream');
-    createVideoElm(remoteStreamContainer, evt.stream);
-  };
+function socketSetup(){
   socket.on('message', function (msg) {
     if(!msPC) multiStreamPCSetup(peer.socket);
     console.log('socket on "message"', msg);
@@ -80,6 +57,33 @@ function multiStreamPCSetup(socket) {
     }
     //if(msg.type === 'PING') socket.send(JSON.stringify({ type: 'PONG' }));
   });
+}
+
+function multiStreamPCSetup(socket) {
+  msPC = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.skyway.io:3478' }] });
+  msPC.onicecandidate = evt => {
+    console.log('msPC onicecandidate', evt.candidate);
+    socket.send({
+      type: 'CANDIDATE',
+      cnd: evt.candidate,
+      dst: callTo.value
+    });
+  };
+  msPC.onnegotiationneeded = evt => {
+    console.log('msPC onnegotiationneeded');
+    msPC.createOffer()
+      .then(offer => msPC.setLocalDescription(offer))
+      .then(_ => socket.send({
+        type: 'OFFER',
+        ofr: msPC.localDescription,
+        dst: callTo.value
+      }))
+      .catch(e => console.log('create offer error', e));
+  }
+  msPC.onaddstream = evt => {
+    console.log('msPC onaddstream');
+    createVideoElm(remoteStreamContainer, evt.stream);
+  };
 };
 
 function addStream() {
