@@ -55,24 +55,24 @@ function multiStreamPCSetup(socket) {
       pc.setRemoteDescription(new RTCSessionDescription(msg.ans));
     }
     if (msg.ofr) {
-      pc.setRemoteDescription(new RTCSessionDescription(msg.ofr))
+      msPC.setRemoteDescription(new RTCSessionDescription(msg.ofr))
         .then(_ => {
-          return pc.createAnswer();
+          return msPC.createAnswer();
         })
         .then(answer => {
-          return pc.setLocalDescription(answer);
+          return msPC.setLocalDescription(answer);
         })
         .then(_ => {
           return socket.send({
             type: 'ANSWER',
-            ans: pc.localDescription,
+            ans: msPC.localDescription,
             dst: msg.src
           })
         })
         .catch(e => console.log('set remote offer error', e));
     }
     if (msg.cnd) {
-      pc.addIceCandidate(new RTCIceCandidate(msg.cnd));
+      msPC.addIceCandidate(new RTCIceCandidate(msg.cnd));
     }
     //if(msg.type === 'PING') socket.send(JSON.stringify({ type: 'PONG' }));
   });
