@@ -1,32 +1,17 @@
-var apiKey = 'ce16d9aa-4119-4097-a8a5-3a5016c6a81c';
+var peer = new Peer({ key: 'ce16d9aa-4119-4097-a8a5-3a5016c6a81c', debug: 3 });
 var msPC = null;
 var devices = null;
 var deviceIdx = 0;
 var socket = null;
-var token = Math.random().toString(36).substr(2);
 
-fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now()}${Math.random()}`).then(res => res.text()).then(myId => {
-  myIdDisp.textContent = myId;
-  socket = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myId}&token=${token}`);
-  socket.onmessage = evt => {
-    if (!msPC) multiStreamPCSetup();
-    const msg = JSON.parse(evt.data);
-    if (msg.src && apiKey && !pc) start(dstId = msg.src);
-    msg.ans && pc.setRemoteDescription(new RTCSessionDescription(msg.ans));
-    msg.ofr && pc.setRemoteDescription(new RTCSessionDescription(msg.ofr))
-      .then(_ => pc.createAnswer())
-      .then(answer => pc.setLocalDescription(answer))
-      .then(_ => socket.send(JSON.stringify({ type: 'ANSWER', ans: pc.localDescription, dst: msg.src })))
-      .catch(e => console.log('set remote offer error', e));
-    msg.cnd && pc.addIceCandidate(new RTCIceCandidate(msg.cnd));
-    msg.type === 'PING' && socket.send(JSON.stringify({ type: 'PONG' }));
-  };
-  socket.onclose = evt => console.log(`socket close: code=${evt.code}`);
-
+peer.on('open', id => {
+  socket = peer.socket;
+  console.log('peer on "open"');
+  myIdDisp.textContent = id;
   navigator.mediaDevices.enumerateDevices().then(devs => {
     devices = devs.filter(dev => dev.kind === 'videoinput');
     if (devs.length > 0) {
-      if (!msPC) multiStreamPCSetup();
+      if(!msPC) multiStreamPCSetup(peer.socket);
       btnAddStream.style.display = '';
       btnAddStream.onclick = evt => {
         addStream();
@@ -37,44 +22,9 @@ fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now()}${Math.random()}`).then(re
       }
     }
   });
-
 });
 
-// function socketSetup(socket) {
-//   socket.on('message', function (msg) {
-//     if (!msPC) multiStreamPCSetup(peer.socket);
-//     console.log('socket on "message"', msg);
-//     //const msg = JSON.parse(data);
-//     if (msg.ans) {
-//       console.log('recieve answer', msg.ans);
-//       msPC.setRemoteDescription(new RTCSessionDescription(msg.ans));
-//     }
-//     if (msg.ofr) {
-//       console.log('recieve offer', msg.ofr);
-//       msPC.setRemoteDescription(new RTCSessionDescription(msg.ofr))
-//         .then(_ => {
-//           return msPC.createAnswer();
-//         })
-//         .then(answer => {
-//           return msPC.setLocalDescription(answer);
-//         })
-//         .then(_ => {
-//           return socket.send({
-//             type: 'ANSWER',
-//             ans: msPC.localDescription,
-//             dst: msg.src
-//           })
-//         })
-//         .catch(e => console.log('set remote offer error', e));
-//     }
-//     if (msg.cnd) {
-//       msPC.addIceCandidate(new RTCIceCandidate(msg.cnd));
-//     }
-//     //if(msg.type === 'PING') socket.send(JSON.stringify({ type: 'PONG' }));
-//   });
-// }
-
-function multiStreamPCSetup() {
+function multiStreamPCSetup(socket) {
   msPC = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.skyway.io:3478' }] });
   msPC.onicecandidate = evt => {
     console.log('msPC onicecandidate', evt.candidate);
