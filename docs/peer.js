@@ -1019,44 +1019,44 @@ Peer.prototype._handleMessage = function(message) {
       this.emitError('peer-unavailable', 'Could not connect to peer ' + peer);
       break;
     case 'OFFER': // we should consider switching this to CALL/CONNECT, but this is the least breaking option.
-      var connectionId = payload.connectionId;
-      connection = this.getConnection(peer, connectionId);
+      // var connectionId = payload.connectionId;
+      // connection = this.getConnection(peer, connectionId);
 
-      if (connection) {
-        util.warn('Offer received for existing Connection ID:', connectionId);
-        //connection.handleMessage(message);
-      } else {
-        // Create a new connection.
-        if (payload.type === 'media') {
-          connection = new MediaConnection(peer, this, {
-            connectionId: connectionId,
-            _payload: payload,
-            metadata: payload.metadata
-          });
-          util.log("MediaConnection created in OFFER");
-          this._addConnection(peer, connection);
-          this.emit('call', connection);
-        } else if (payload.type === 'data') {
-          connection = new DataConnection(peer, this, {
-            connectionId: connectionId,
-            _payload: payload,
-            metadata: payload.metadata,
-            label: payload.label,
-            serialization: payload.serialization,
-            reliable: payload.reliable
-          });
-          this._addConnection(peer, connection);
-          this.emit('connection', connection);
-        } else {
-          util.warn('Received malformed connection type:', payload.type);
-          return;
-        }
-        // Find messages.
-        var messages = this._getMessages(connectionId);
-        for (var i = 0, ii = messages.length; i < ii; i += 1) {
-          connection.handleMessage(messages[i]);
-        }
-      }
+      // if (connection) {
+      //   util.warn('Offer received for existing Connection ID:', connectionId);
+      //   //connection.handleMessage(message);
+      // } else {
+      //   // Create a new connection.
+      //   if (payload.type === 'media') {
+      //     connection = new MediaConnection(peer, this, {
+      //       connectionId: connectionId,
+      //       _payload: payload,
+      //       metadata: payload.metadata
+      //     });
+      //     util.log("MediaConnection created in OFFER");
+      //     this._addConnection(peer, connection);
+      //     this.emit('call', connection);
+      //   } else if (payload.type === 'data') {
+      //     connection = new DataConnection(peer, this, {
+      //       connectionId: connectionId,
+      //       _payload: payload,
+      //       metadata: payload.metadata,
+      //       label: payload.label,
+      //       serialization: payload.serialization,
+      //       reliable: payload.reliable
+      //     });
+      //     this._addConnection(peer, connection);
+      //     this.emit('connection', connection);
+      //   } else {
+      //     util.warn('Received malformed connection type:', payload.type);
+      //     return;
+      //   }
+      //   // Find messages.
+      //   var messages = this._getMessages(connectionId);
+      //   for (var i = 0, ii = messages.length; i < ii; i += 1) {
+      //     connection.handleMessage(messages[i]);
+      //   }
+      // }
       break;
     default:
       if (!payload) {
@@ -1064,18 +1064,18 @@ Peer.prototype._handleMessage = function(message) {
         return;
       }
 
-      var id = payload.connectionId;
-      connection = this.getConnection(peer, id);
+      // var id = payload.connectionId;
+      // connection = this.getConnection(peer, id);
 
-      if (connection && connection.pc) {
-        // Pass it on.
-        connection.handleMessage(message);
-      } else if (id) {
-        // Store for possible later use
-        this._storeMessage(id, message);
-      } else {
-        util.warn('You received an unrecognized message:', message);
-      }
+      // if (connection && connection.pc) {
+      //   // Pass it on.
+      //   connection.handleMessage(message);
+      // } else if (id) {
+      //   // Store for possible later use
+      //   this._storeMessage(id, message);
+      // } else {
+      //   util.warn('You received an unrecognized message:', message);
+      // }
       break;
   }
 };
