@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        #selfView {
+            position: absolute;
+            width: 427px;
+            height: 240px;
+            top: 0;
+            left: 0;
+        }
+
+        .container {
+            height: 170px;
+        }
+
+        canvas,
+        video {
+            position: relative;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        My Id: <span id="myIdDisp"></span>
+    </div>
+    <div>
+        Connect Id: <input type="text" id="callTo">
+        <button id="btnAddStream" style="display: none">Add Stream</button>
+    </div>
+    <div id="selfStreamContainer" class="container"></div>
+    <div id="remoteStreamContainer" class="container"></div>
+    <div>
+        <input id="msgTxt" style="display: none">
+    </div>
+    <div id="msgContainer">
+    </div>
+    <script src="peer.js"></script>
+    <script src="test.js"></script>
+</body>
+
+</html>
