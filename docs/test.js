@@ -5,7 +5,7 @@ var deviceIdx = 0;
 var socket = null;
 
 peer.on('open', id => {
-  socket = peer.socket;
+  socketSetup(peer.socket);
   console.log('peer on "open"');
   myIdDisp.textContent = id;
   navigator.mediaDevices.enumerateDevices().then(devs => {
@@ -23,6 +23,40 @@ peer.on('open', id => {
     }
   });
 });
+
+function socketSetup(socket) {
+  socket.on('message', function (msg) {
+    if (!msPC) multiStreamPCSetup(peer.socket);
+    console.log('socket on "message"', msg);
+    //const msg = JSON.parse(data);
+    if (msg.ans) {
+      console.log('recieve answer', msg.ans);
+      msPC.setRemoteDescription(new RTCSessionDescription(msg.ans));
+    }
+    if (msg.ofr) {
+      console.log('recieve offer', msg.ofr);
+      msPC.setRemoteDescription(new RTCSessionDescription(msg.ofr))
+        .then(_ => {
+          return msPC.createAnswer();
+        })
+        .then(answer => {
+          return msPC.setLocalDescription(answer);
+        })
+        .then(_ => {
+          return socket.send({
+            type: 'ANSWER',
+            ans: msPC.localDescription,
+            dst: msg.src
+          })
+        })
+        .catch(e => console.log('set remote offer error', e));
+    }
+    if (msg.cnd) {
+      msPC.addIceCandidate(new RTCIceCandidate(msg.cnd));
+    }
+    //if(msg.type === 'PING') socket.send(JSON.stringify({ type: 'PONG' }));
+  });
+}
 
 function multiStreamPCSetup(socket) {
   msPC = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.skyway.io:3478' }] });
