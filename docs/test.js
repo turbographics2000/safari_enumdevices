@@ -84,10 +84,7 @@ function multiStreamPCSetup(socket) {
 function addStream() {
   navigator.mediaDevices.getUserMedia({
     video: {
-      deviceId: devices[deviceIdx].deviceId,
-      optional: {
-        deviceId: devices[deviceIdx].deviceId 
-      }
+      deviceId: { exact: devices[deviceIdx].deviceId },
     }
   }).then(stream => {
     createVideoElm(selfStreamContainer, stream);
