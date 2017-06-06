@@ -50,6 +50,7 @@ function multiStreamPCSetup(socket) {
     createVideoElm(remoteStreamContainer, evt.stream);
   };
   socket.on('message', function (msg) {
+    if(!msPC) multiStreamPCSetup(peer.socket);
     console.log('socket on "message"', msg);
     //const msg = JSON.parse(data);
     if (msg.ans) {
