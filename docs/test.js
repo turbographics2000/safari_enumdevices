@@ -9,20 +9,19 @@ peer.on('open', id => {
   console.log('peer on "open"');
   myIdDisp.textContent = id;
   navigator.mediaDevices.enumerateDevices().then(devs => {
-    devs.filter(dev => dev.kind === 'videoInput').forEach(dev => {
-      if (devs.length > 0) {
-        devices = devs;
-        multiStreamPCSetup(peer.socket);
-        btnAddStream.style.display = '';
-        btnAddStream.onclick = evt => {
-          addStream();
-          deviceIdx++;
-          if (deviceIdx === devices.length) {
-            btnAddStream.style.display = 'none';
-          }
+    devices = devs.filter(dev => dev.kind === 'videoInput');
+    if (devs.length > 0) {
+      devices = devs;
+      multiStreamPCSetup(peer.socket);
+      btnAddStream.style.display = '';
+      btnAddStream.onclick = evt => {
+        addStream();
+        deviceIdx++;
+        if (deviceIdx === devices.length) {
+          btnAddStream.style.display = 'none';
         }
       }
-    })
+    }
   });
 });
 
