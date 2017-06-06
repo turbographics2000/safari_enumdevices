@@ -5,8 +5,7 @@ var deviceIdx = 0;
 var socket = null;
 
 peer.on('open', id => {
-  socketSetup();
-  socket = peer.socket;
+  socketSetup(peer.socket);
   console.log('peer on "open"');
   myIdDisp.textContent = id;
   navigator.mediaDevices.enumerateDevices().then(devs => {
@@ -25,7 +24,7 @@ peer.on('open', id => {
   });
 });
 
-function socketSetup(){
+function socketSetup(socket){
   socket.on('message', function (msg) {
     if(!msPC) multiStreamPCSetup(peer.socket);
     console.log('socket on "message"', msg);
