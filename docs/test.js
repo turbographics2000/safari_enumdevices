@@ -9,7 +9,7 @@ peer.on('open', id => {
   console.log('peer on "open"');
   myIdDisp.textContent = id;
   navigator.mediaDevices.enumerateDevices().then(devs => {
-    devices = devs.filter(dev => dev.kind === 'videoInput');
+    devices = devs.filter(dev => dev.kind === 'videoinput');
     if (devs.length > 0) {
       multiStreamPCSetup(peer.socket);
       btnAddStream.style.display = '';
