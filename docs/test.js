@@ -48,9 +48,9 @@ function multiStreamPCSetup(socket) {
     console.log('msPC onaddstream');
     createVideoElm(remoteStreamContainer, evt.stream);
   };
-  socket.on('message', function (data) {
-    console.log('socket on "message"', data);
-    const msg = JSON.parse(data);
+  socket.on('message', function (msg) {
+    console.log('socket on "message"', msg);
+    //const msg = JSON.parse(data);
     if (msg.ans) {
       pc.setRemoteDescription(new RTCSessionDescription(msg.ans));
     }
