@@ -11,7 +11,6 @@ peer.on('open', id => {
   navigator.mediaDevices.enumerateDevices().then(devs => {
     devices = devs.filter(dev => dev.kind === 'videoInput');
     if (devs.length > 0) {
-      devices = devs;
       multiStreamPCSetup(peer.socket);
       btnAddStream.style.display = '';
       btnAddStream.onclick = evt => {
