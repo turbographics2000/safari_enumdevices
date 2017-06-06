@@ -36,10 +36,10 @@ function multiStreamPCSetup(socket) {
   msPC.onnegotiationneeded = evt => {
     console.log('msPC onnegotiationneeded');
     msPC.createOffer()
-      .then(offer => pc.setLocalDescription(offer))
+      .then(offer => msPC.setLocalDescription(offer))
       .then(_ => socket.send({
         type: 'OFFER',
-        ofr: pc.localDescription,
+        ofr: msPC.localDescription,
         dst: callTo.value
       }))
       .catch(e => console.log('create offer error', e));
