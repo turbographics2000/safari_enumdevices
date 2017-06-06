@@ -52,9 +52,11 @@ function multiStreamPCSetup(socket) {
     console.log('socket on "message"', msg);
     //const msg = JSON.parse(data);
     if (msg.ans) {
+      console.log('recieve answer', msg.ans);
       msPC.setRemoteDescription(new RTCSessionDescription(msg.ans));
     }
     if (msg.ofr) {
+      console.log('recieve offer', msg.ofr);
       msPC.setRemoteDescription(new RTCSessionDescription(msg.ofr))
         .then(_ => {
           return msPC.createAnswer();
