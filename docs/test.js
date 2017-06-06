@@ -4,26 +4,24 @@ var devices = null;
 var deviceIdx = 0;
 var socket = null;
 
-btnStart.onclick = evt => {
-  peer.on('open', id => {
-    socket = peer.socket;
-    console.log('peer on "open"');
-    myIdDisp.textContent = id;
-    navigator.mediaDevices.enumerateDevices().then(devs => {
-      if (devs.length > 0) {
-        devices = devs;
-        multiStreamPCSetup(peer.socket);
-        btnAddStream.style.display = '';
-        btnAddStream.onclick = evt => {
-          addStream();
-          if(deviceIdx === devices.length - 1) {
-            btnAddStream.style.display = 'none';
-          }
+peer.on('open', id => {
+  socket = peer.socket;
+  console.log('peer on "open"');
+  myIdDisp.textContent = id;
+  navigator.mediaDevices.enumerateDevices().then(devs => {
+    if (devs.length > 0) {
+      devices = devs;
+      multiStreamPCSetup(peer.socket);
+      btnAddStream.style.display = '';
+      btnAddStream.onclick = evt => {
+        addStream();
+        if (deviceIdx === devices.length - 1) {
+          btnAddStream.style.display = 'none';
         }
       }
-    });
+    }
   });
-};
+});
 
 function multiStreamPCSetup(socket) {
   msPC = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.skyway.io:3478' }] });
@@ -53,10 +51,10 @@ function multiStreamPCSetup(socket) {
   socket.on('message', function (data) {
     console.log('socket on "message"', data);
     const msg = JSON.parse(data);
-    if(msg.ans) {
+    if (msg.ans) {
       pc.setRemoteDescription(new RTCSessionDescription(msg.ans));
     }
-    if(msg.ofr) { 
+    if (msg.ofr) {
       pc.setRemoteDescription(new RTCSessionDescription(msg.ofr))
         .then(_ => {
           return pc.createAnswer();
@@ -65,16 +63,16 @@ function multiStreamPCSetup(socket) {
           return pc.setLocalDescription(answer);
         })
         .then(_ => {
-          return socket.send(JSON.stringify({ 
-            type: 'ANSWER', 
-            ans: pc.localDescription, 
-            dst: msg.src 
+          return socket.send(JSON.stringify({
+            type: 'ANSWER',
+            ans: pc.localDescription,
+            dst: msg.src
           }))
         })
         .catch(e => console.log('set remote offer error', e));
     }
-    if(msg.cnd) {
-       pc.addIceCandidate(new RTCIceCandidate(msg.cnd));
+    if (msg.cnd) {
+      pc.addIceCandidate(new RTCIceCandidate(msg.cnd));
     }
     //if(msg.type === 'PING') socket.send(JSON.stringify({ type: 'PONG' }));
   });
