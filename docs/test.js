@@ -12,7 +12,7 @@ peer.on('open', id => {
   navigator.mediaDevices.enumerateDevices().then(devs => {
     devices = devs.filter(dev => dev.kind === 'videoinput');
     if (devs.length > 0) {
-      if(!msPC) multiStreamPCSetup(peer.socket);
+      if (!msPC) multiStreamPCSetup(peer.socket);
       btnAddStream.style.display = '';
       btnAddStream.onclick = evt => {
         addStream();
@@ -50,7 +50,9 @@ function socketSetup() {
             dst: msg.src
           })
         })
-        .catch(e => console.log('set remote offer error', e));
+        .catch(e => {
+          console.log('set remote offer error', e);
+        });
     }
     if (msg.cnd) {
       msPC.addIceCandidate(new RTCIceCandidate(msg.cnd));
@@ -78,7 +80,9 @@ function multiStreamPCSetup(socket) {
         ofr: msPC.localDescription,
         dst: callTo.value
       }))
-      .catch(e => console.log('create offer error', e));
+      .catch(e => {
+        console.log('create offer error', e);
+      });
   }
   msPC.onaddstream = evt => {
     console.log('msPC onaddstream');
