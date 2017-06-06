@@ -9,7 +9,7 @@ fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now()}${Math.random()}`).then(re
   myIdDisp.textContent = myId;
   socket = new WebSocket(`wss://skyway.io/peerjs?key=${apiKey}&id=${myId}&token=${token}`);
   socket.onmessage = evt => {
-    if(!msPC) multiStreamPCSetup();
+    if (!msPC) multiStreamPCSetup();
     const msg = JSON.parse(evt.data);
     if (msg.src && apiKey && !pc) start(dstId = msg.src);
     msg.ans && pc.setRemoteDescription(new RTCSessionDescription(msg.ans));
@@ -26,10 +26,9 @@ fetch(`https://skyway.io/${apiKey}/id?ts=${Date.now()}${Math.random()}`).then(re
   navigator.mediaDevices.enumerateDevices().then(devs => {
     devices = devs.filter(dev => dev.kind === 'videoinput');
     if (devs.length > 0) {
-      multiStreamPCSetup(peer.socket);
+      if (!msPC) multiStreamPCSetup();
       btnAddStream.style.display = '';
       btnAddStream.onclick = evt => {
-        if(!msPC) multiStreamPCSetup();
         addStream();
         deviceIdx++;
         if (deviceIdx === devices.length) {
