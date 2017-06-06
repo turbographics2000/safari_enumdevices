@@ -15,7 +15,8 @@ peer.on('open', id => {
       btnAddStream.style.display = '';
       btnAddStream.onclick = evt => {
         addStream();
-        if (deviceIdx === devices.length - 1) {
+        deviceIdx++;
+        if (deviceIdx === devices.length) {
           btnAddStream.style.display = 'none';
         }
       }
