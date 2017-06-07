@@ -4,6 +4,7 @@ var devices = null;
 var deviceIdx = 0;
 var socket = null;
 
+
 peer.on('open', id => {
   socket = peer.socket;
   socketSetup();
@@ -57,7 +58,7 @@ function socketSetup() {
     if (msg.cnd) {
       msPC.addIceCandidate(new RTCIceCandidate(msg.cnd));
     }
-    //if(msg.type === 'PING') socket.send(JSON.stringify({ type: 'PONG' }));
+    if(msg.type === 'PING') socket.send(JSON.stringify({ type: 'PONG' }));
   });
 }
 
